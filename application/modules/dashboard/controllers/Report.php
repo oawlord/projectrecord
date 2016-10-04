@@ -127,7 +127,7 @@ class Report extends Admin_Controller {
       $end_date = date('Y-m-d').' 23:59:59';
       $config['base_url'] = 'http://localhost/projectrecord/dashboard/report/yearly_report';
       $config['total_rows'] = count($this->m_estimation->all_reports($start_date,$end_date));
-      $config['per_page'] = 2;
+      $config['per_page'] = 15;
       $config['full_tag_open'] = '<ul class="pagination">';
       $config['full_tag_close'] = '</ul>';
       $config['first_link'] = 'First';
@@ -149,7 +149,7 @@ class Report extends Admin_Controller {
       $this->pagination->initialize($config);
       $offset = $id;//($this->uri->segment(4)) ? $this->uri->segment(4) : 0;
       $data['links'] = $this->pagination->create_links();
-      $data['title'] = "This Month Report";
+      $data['title'] = "This Year Report";
       $data['start_date'] = $start_date;
       $data['end_date'] = $end_date;
       $data['records']=$this->m_estimation->reports($config['per_page'],$offset,$start_date,$end_date);

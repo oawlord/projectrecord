@@ -4,7 +4,7 @@
     <section class="content">
         <div class="row" style="margin: 15px 0px; text-align: right">
           <div class="col-md-12">
-            <a class="btn btn-primary" href="<?php echo site_url('dashboard/export/export_daily'); ?>">Export</a>
+            <a class="btn btn-primary" href="<?php echo site_url('dashboard/export/export_report/?start_date='.$start_date.'&end_date='.$end_date); ?>">Export</a>
           </div>
         </div>
         <div class="row">

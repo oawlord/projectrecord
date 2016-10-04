@@ -106,11 +106,11 @@ class m_estimation extends CI_Model {
         }
     }
     //for daily report
-    function all_daily_reports() {
+    function all_reports($start_date, $end_date) {
         $this->load->database();
         try{
           $date= Date('Y-m-d');
-          $result = $this->db->query("SELECT p.project_name, p.project_date, sum(pet.estimated_hours) as total_estimated_hours FROM `project_estimation_tasks` as pet join projects as p on pet.project_id = p.project_id where p.project_date like '%$date%' group by project_name ");
+          $result = $this->db->query("SELECT p.project_name, p.project_date, sum(pet.estimated_hours) as total_estimated_hours FROM `project_estimation_tasks` as pet join projects as p on pet.project_id = p.project_id where p.project_date between '$start_date' and '$end_date' group by project_name");
           // $result = $this->db->query("SELECT p.project_name, p.project_date, pet.estimated_hours as total_estimated_hours FROM project_estimation_tasks as pet join projects as p on pet.project_id = p.project_id");
           $result = $result->result();
           return $result;
@@ -120,11 +120,11 @@ class m_estimation extends CI_Model {
           return $e;
         }
     }
-    function daily_reports($limit, $offset) {
+    function reports($limit, $offset, $start_date, $end_date) {
         $this->load->database();
         $date= Date('Y-m-d');
         try{
-          $result = $this->db->query("SELECT p.project_name, p.project_date, sum(pet.estimated_hours) as total_estimated_hours FROM `project_estimation_tasks` as pet join projects as p on pet.project_id = p.project_id where p.project_date like '%$date%' group by project_name limit $limit offset $offset ");
+          $result = $this->db->query("SELECT p.project_name, p.project_date, sum(pet.estimated_hours) as total_estimated_hours FROM `project_estimation_tasks` as pet join projects as p on pet.project_id = p.project_id where p.project_date between '$start_date' and '$end_date' group by project_name limit $limit offset $offset ");
           // $result = $this->db->query("SELECT p.project_name, p.project_date, pet.estimated_hours as total_estimated_hours FROM project_estimation_tasks as pet join projects as p on pet.project_id = p.project_id limit $limit offset $offset");
           $result = $result->result();
           return $result;
@@ -134,25 +134,4 @@ class m_estimation extends CI_Model {
           return $e;
         }
     }
-
-    function export_estimation($project_name) {
-        $this->load->database();
-
-        //$project = $this->db->select('*')->from('projects')->where("project_name=".$project_name)->get();
-        //$project=$this->db->get("projects");
-        $query = $this->db->select("project_id")->where("project_name", $project_name)->get("projects");
-        if ($query->result()) {
-            $project_id = $query->result()[0]->project_id;
-        }
-        if (isset($project_id) && !empty($project_id)) {
-            $query = $this->db->select()->where("project_id", $project_id)->get("project_estimation_tasks");
-            $result = $query->result();
-        }
-        if (isset($result) && !empty($result)) {
-
-            return $result;
-        }
-        die();
-    }
-
 }

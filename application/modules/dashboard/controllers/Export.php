@@ -122,17 +122,20 @@ class Export extends Admin_Controller {
             exit;
         }
     }
-    function export_daily()
+
+    function export_report()
     {
-      $name='Daily Report'.date('Y-m-d');
+      $start_date = $this->input->get("start_date");
+      $end_date = $this->input->get("end_date");
+      $name=$start_date.'to'.$end_date;
       $this->load->library('excel');
-      $excel_data_object = $this->m_estimation->all_daily_reports();
+      $excel_data_object = $this->m_estimation->all_reports($start_date,$end_date);
       $objPHPExcel = new PHPExcel();
       $objWorksheet = $objPHPExcel->getActiveSheet();
       $rowcount = 1;
       if ($excel_data_object) {
           foreach ($excel_data_object as $row) {
-              $metadata = unserialize($row->metadata);
+              // $metadata = unserialize($row->metadata);
               if ($rowcount == 1) {
                   $objWorksheet->setCellValue('A1', "S.No");
                   $objWorksheet->setCellValue('B1', "Project Name ");
@@ -140,26 +143,20 @@ class Export extends Admin_Controller {
                   $objWorksheet->setCellValue('D1', "Total Estimated Hours");
                   $objPHPExcel->getActiveSheet()->getStyle("A1:F1")->getFont()->setBold(true);
                   $objPHPExcel->getActiveSheet()->getStyle("A1:F1")->getFont()->setSize("12");
-                  $
+                  $rowcount++;
               }
-              $objWorksheet->setCellValue('A' . $rowcount, $rowcount);
+              $objWorksheet->setCellValue('A' . $rowcount, $rowcount-1);
               $objWorksheet->setCellValue('B' . $rowcount, $row->project_name);
               $objWorksheet->setCellValue('C' . $rowcount, $row->project_date);
               $objWorksheet->setCellValue('D' . $rowcount, $row->total_estimated_hours);
               if (isset($metadata['bold']) && !empty($metadata['bold'])) {
                   $objPHPExcel->getActiveSheet()->getStyle("A" . $rowcount . ":D" . $rowcount)->getFont()->setBold(true);
               }
-              //set cell intent
-              $objWorksheet->getStyle('A' . $rowcount)->getAlignment()->setIndent($metadata['outline']);
-
               if ($rowcount != 1) {
-                  if ($metadata['color_code'] != 'ffffff') {
-                      $objWorksheet->getStyle('A' . $rowcount . ':D' . $rowcount)->getFill()
-                              ->setFillType(PHPExcel_Style_Fill::FILL_SOLID)
-                              ->getStartColor()
-                              ->setARGB($metadata['color_code']);
-                  }
-                  $objWorksheet->getRowDimension($rowcount)->setOutlineLevel($metadata['outline']);
+                  $objWorksheet->getStyle('A' . $rowcount . ':D' . $rowcount)->getFill()
+                        ->setFillType(PHPExcel_Style_Fill::FILL_SOLID)
+                        ->getStartColor()
+                        ->setARGB('ffffff');
               }
               $rowcount++;
           }
@@ -178,7 +175,7 @@ class Export extends Admin_Controller {
                   )
           );
           //set cell width
-          $objWorksheet->getColumnDimension('A')->setWidth(15);
+          $objWorksheet->getColumnDimension('A')->setWidth(5);
           $objWorksheet->getColumnDimension('B')->setWidth(50);
           $objWorksheet->getColumnDimension('C')->setWidth(30);
           $objWorksheet->getColumnDimension('D')->setWidth(30);
